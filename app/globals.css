@@ -1,26 +1,209 @@
+@import './fonts/montserrat.css';
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --color-accent: 24.6 95% 53.1%;
+    --color-accent-light: 29.7 97.2% 72.4%;
+    --color-accent-dark: 21.8 90.2% 48.2%; 
+    
+    --font-montserrat: 'Montserrat', sans-serif;
+    --font-sans: var(--font-montserrat);
+  }
+
+  body {
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Custom selection color with accent */
+  ::selection {
+    background-color: rgba(251, 146, 60, 0.2);
+    color: #1f2937;
+  }
+
+  /* Custom scrollbar with accent */
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background-color: #f3f4f6;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: #fb923c;
+    border-radius: 9999px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: #f97316;
+    transition: background-color 300ms;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer components {
+  /* Adventure-themed buttons */
+  .btn-adventure {
+    background: linear-gradient(to right, #fb923c, #f97316);
+    color: white;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    letter-spacing: 0.025em;
+    transition: all 300ms;
+    transform: translateY(0);
+    box-shadow: 0 10px 30px -3px rgba(251, 146, 60, 0.3), 0 4px 6px -2px rgba(251, 146, 60, 0.1);
+  }
+
+  .btn-adventure:hover {
+    background: linear-gradient(to right, #f97316, #ea580c);
+    transform: translateY(-2px);
+    box-shadow: 0 20px 60px -10px rgba(251, 146, 60, 0.4), 0 10px 20px -5px rgba(251, 146, 60, 0.2);
+  }
+
+  .btn-adventure:focus {
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 2px rgba(251, 146, 60, 0.4);
+  }
+
+  .btn-adventure-outline {
+    border: 2px solid #fb923c;
+    color: #ea580c;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    letter-spacing: 0.025em;
+    transition: all 300ms;
+  }
+
+  .btn-adventure-outline:hover {
+    background-color: #fb923c;
+    color: white;
+  }
+
+  /* Adventure cards */
+  .adventure-card {
+    background-color: white;
+    border-radius: 1rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+    transition: all 300ms;
+    border: 1px solid #e5e7eb;
+  }
+
+  .adventure-card:hover {
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    transform: translateY(-4px);
+  }
+
+  .adventure-card-accent {
+    border-left: 4px solid #fb923c;
+  }
+
+  /* Gradient text */
+  .text-gradient-adventure {
+    background: linear-gradient(to right, #fb923c, #f97316, #fdba74);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* Badges */
+  .badge-accent {
+    display: inline-flex;
+    align-items: center;
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    background-color: #ffedd5;
+    color: #9a3412;
+  }
+
+  /* Navigation accent */
+  .nav-link-accent {
+    position: relative;
+    color: #374151;
+    transition: color 200ms;
+  }
+
+  .nav-link-accent:hover {
+    color: #ea580c;
+  }
+
+  .nav-link-accent::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 2px;
+    width: 0;
+    background-color: #fb923c;
+    transition: all 300ms;
+  }
+
+  .nav-link-accent:hover::after {
+    width: 100%;
+  }
+
+  .nav-link-active {
+    color: #ea580c;
+  }
+
+  .nav-link-active::after {
+    width: 100%;
+  }
+}
+
+@layer utilities {
+  /* Animation utilities */
+  .animate-pulse-glow {
+    animation: pulse-glow 2s ease-in-out infinite;
+  }
+
+  .animate-shine {
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(251, 146, 60, 0.2),
+      rgba(251, 146, 60, 0.4),
+      rgba(251, 146, 60, 0.2),
+      transparent
+    );
+    background-size: 200% auto;
+    animation: shine 2s linear infinite;
+  }
+
+  /* Adventure-specific utilities */
+  .text-shadow-adventure {
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  }
+
+  .glass-adventure {
+    backdrop-filter: blur(12px);
+    background-color: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(251, 146, 60, 0.3);
+  }
+}
+
+/* Custom animations */
+@keyframes flicker {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.8; }
+}
+
+.animate-flicker {
+  animation: flicker 2s ease-in-out infinite;
 }
