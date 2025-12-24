@@ -1,4 +1,6 @@
 // components/Hero.tsx
+import Link from 'next/link'
+
 const Hero = () => {
   return (
     <section className="relative overflow-hidden bg-gradient-to-br from-blue-50 via-white to-green-50">
@@ -23,12 +25,18 @@ const Hero = () => {
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="btn-adventure text-lg px-8 py-4">
+            <Link 
+              href="/adventures" 
+              className="btn-adventure text-lg px-8 py-4 inline-flex items-center justify-center"
+            >
               Explore Adventures
-            </button>
-            <button className="btn-adventure-outline text-lg px-8 py-4">
+            </Link>
+            <Link 
+              href="/about" 
+              className="btn-adventure-outline text-lg px-8 py-4 inline-flex items-center justify-center"
+            >
               Learn More
-            </button>
+            </Link>
           </div>
         </div>
       </div>

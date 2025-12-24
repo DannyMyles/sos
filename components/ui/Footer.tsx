@@ -38,15 +38,6 @@ const Footer = () => {
                   <p className="text-xs text-gray-100">Fun & Fitness</p>
                 </div>
               </Link>
-              {/* <div className="h-12 w-12 rounded-full bg-gradient-adventure p-1">
-                <div className="flex h-full w-full items-center justify-center rounded-full bg-white">
-                  <span className="text-2xl font-bold text-gradient-adventure">SOA</span>
-                </div>
-              </div>
-              <div>
-                <h2 className="text-xl font-bold">Source of Adventure</h2>
-                <p className="text-sm text-gray-400">Fun & Fitness</p>
-              </div> */}
             </div>
             <p className="text-gray-400 mb-6">
               Empowering adventures that combine thrilling experiences with fitness and fun.

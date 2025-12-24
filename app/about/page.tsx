@@ -115,17 +115,15 @@ export default function About() {
               {teamMembers.map((member) => (
                 <div key={member.name} className="adventure-card group hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 bg-white">
                   {/* Team Member Header with Image - FIXED */}
-                  <div className="relative h-64 overflow-hidden rounded-t-2xl">
-                    <div className="relative w-full h-full">
-                      <Image
-                        src={member.image}
-                        alt={member.name}
-                        fill
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                        className="object-cover"
-                        priority={member.name === 'Mark Sila'}
-                      />
-                    </div>
+                  <div className="relative aspect-[4/3] overflow-hidden rounded-t-2xl">
+                    <Image
+                      src={member.image}
+                      alt={member.name}
+                      fill
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      className="object-cover object-top" // Changed to show faces at top
+                      priority={member.name === 'Mark Sila'}
+                    />
                     
                     {/* LIGHT Overlay at bottom only for text readability */}
                     <div className={`absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t ${
@@ -159,7 +157,7 @@ export default function About() {
                     {/* Role Titles - Better formatting */}
                     <div className="mb-4">
                       <p className="text-sm font-semibold uppercase tracking-wider text-accent-600 mb-1">
-                        HEAD PERSONAL TRAINER
+                        PERSONAL TRAINER
                       </p>
                       <p className="text-sm font-semibold uppercase tracking-wider text-gray-500">
                         AEROBICS MASTER
