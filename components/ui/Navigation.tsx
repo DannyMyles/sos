@@ -143,17 +143,8 @@ const Navigation = () => {
             isMenuOpen ? 'translate-x-0' : 'translate-x-full'
           }`}>
             {/* Mobile Logo */}
-            <div className="p-6 border-b border-gray-100">
+            <div className="px-2 py-5 border-b border-gray-100">
               <div className="flex items-center space-x-3">
-                <div className="relative w-12 h-12">
-                  <Image 
-                    src="/SOA Logo-03.png" 
-                    alt="Source of Adventure Logo" 
-                    width={48}
-                    height={48}
-                    className="object-contain"
-                  />
-                </div>
                 <div>
                   <span className="text-xl font-bold text-gradient-adventure">
                     Source of Adventure
@@ -164,16 +155,16 @@ const Navigation = () => {
             </div>
 
             {/* Mobile Navigation Items */}
-            <div className="p-6">
-              <div className="space-y-1">
+            <div className="px-2 py-1 bg-gray-50">
+              <div >
                 {navItems.map((item) => (
                   <Link
                     key={item.name}
                     href={item.path}
-                    className={`flex items-center px-4 py-3 rounded-lg text-lg font-medium transition-colors ${
+                    className={`flex items-center px-2 py-1 rounded-lg text-lg font-medium transition-colors ${
                       pathname === item.path
                         ? 'bg-accent-50 text-accent-600'
-                        : 'text-gray-700 hover:bg-gray-50'
+                        : 'text-gray-600 hover:bg-gray-50'
                     }`}
                     onClick={() => setIsMenuOpen(false)}
                   >
@@ -183,10 +174,10 @@ const Navigation = () => {
               </div>
 
               {/* Mobile CTA Buttons */}
-              <div className="mt-8 space-y-4">
+              <div className="mt-2 space-y-2">
                 <Link
                   href="/calendar"
-                  className="flex items-center justify-center gap-2 w-full px-4 py-3 bg-accent-50 text-accent-600 rounded-lg font-medium hover:bg-accent-100 transition-colors"
+                  className="flex items-center justify-center gap-1 w-full px-4 py-3 bg-accent-50 text-accent-600 rounded-lg font-medium hover:bg-accent-100 transition-colors"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   <Calendar className="w-5 h-5" />
