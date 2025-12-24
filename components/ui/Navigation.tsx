@@ -53,8 +53,8 @@ const Navigation = () => {
     <>
       <nav className={`fixed top-0 z-50 w-full transition-all duration-300 ${
         scrolled || isMenuOpen
-          ? 'bg-white/95 backdrop-blur-md border-b border-accent/20 shadow-lg'
-          : 'bg-white/80 backdrop-blur-md border-b border-accent/10'
+          ? 'bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-lg' 
+          : 'bg-white/80 backdrop-blur-md border-b border-gray-100'
       }`}>
         <div className="container mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
