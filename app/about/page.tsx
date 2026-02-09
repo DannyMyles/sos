@@ -8,7 +8,7 @@ export default function About() {
   const teamMembers = [
     {
       name: 'Mark Sila',
-      role: 'Certified Personal Trainer & Aerobics Master',
+      role: 'Certified Personal Trainer',
       description: 'With over 6 years in fitness education, Mark specializes in high-energy aerobics and personalized training programs. His dynamic approach transforms fitness routines into exhilarating experiences that build strength, endurance, and confidence.',
       expertise: ['Personal Training', 'Aerobics Instruction', 'Cardio Conditioning', 'Fitness Programming'],
       image: '/mark.jpeg',
@@ -154,15 +154,10 @@ export default function About() {
 
                   {/* Team Member Details */}
                   <div className="p-6">
-                    {/* Role Titles - Better formatting */}
-                    <div className="mb-4">
-                      <p className="text-sm font-semibold uppercase tracking-wider text-accent-600 mb-1">
-                        PERSONAL TRAINER
-                      </p>
-                      <p className="text-sm font-semibold uppercase tracking-wider text-gray-500">
-                        AEROBICS MASTER
-                      </p>
-                    </div>
+                    {/* Role Title */}
+                    <p className="text-sm font-semibold uppercase tracking-wider text-accent-600 mb-4">
+                      PERSONAL TRAINER
+                    </p>
                     
                     <p className="text-gray-600 mb-6 leading-relaxed">{member.description}</p>
 
