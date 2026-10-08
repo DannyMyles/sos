@@ -1,7 +1,9 @@
 // app/about/page.tsx
 import Navigation from '@/components/ui/Navigation'
+import PageHeader from '@/components/ui/PageHeader'
 import Footer from '@/components/ui/Footer'
-import { Linkedin, Twitter, Globe, Dumbbell, Heart, Activity } from 'lucide-react'
+import { Dumbbell, Heart, Activity, MessageCircle } from 'lucide-react'
+import { whatsappLink } from '@/lib/contact'
 import Image from 'next/image'
 
 export default function About() {
@@ -12,12 +14,7 @@ export default function About() {
       description: 'With over 6 years in fitness education, Mark specializes in high-energy aerobics and personalized training programs. His dynamic approach transforms fitness routines into exhilarating experiences that build strength, endurance, and confidence.',
       expertise: ['Personal Training', 'Aerobics Instruction', 'Cardio Conditioning', 'Fitness Programming'],
       image: '/mark.jpeg',
-      icon: <Dumbbell className="w-6 h-6" />,
-      social: {
-        twitter: 'https://twitter.com/marksila',
-        linkedin: 'https://linkedin.com/in/marksila',
-        website: 'https://marksilafitness.com'
-      }
+      icon: <Dumbbell className="w-6 h-6" />
     },
     {
       name: 'Teddy Mist',
@@ -25,12 +22,7 @@ export default function About() {
       description: 'Certified personal trainer and yoga instructor specializing in adventure fitness. Teddy designs programs that prepare both body and mind for outdoor challenges.',
       expertise: ['Fitness Training', 'Yoga & Mobility', 'Nutrition Planning', 'Mindfulness'],
       image: '/teddy.jpeg',
-      icon: <Heart className="w-6 h-6" />,
-      social: {
-        twitter: 'https://twitter.com/teddymist',
-        linkedin: 'https://linkedin.com/in/teddymist',
-        website: 'https://teddymistwellness.com'
-      }
+      icon: <Heart className="w-6 h-6" />
     },
     {
       name: 'Edu Shark',
@@ -38,12 +30,7 @@ export default function About() {
       description: 'Navy veteran and professional dive instructor with expertise in all things aquatic. Edu Shark ensures safety while maximizing fun on water adventures.',
       expertise: ['Scuba Diving', 'Survival Training', 'Marine Conservation', 'Water Safety'],
       image: '/edu.jpeg',
-      icon: <Activity className="w-6 h-6" />,
-      social: {
-        twitter: 'https://twitter.com/edushark',
-        linkedin: 'https://linkedin.com/in/edushark',
-        website: 'https://edusharkadventures.com'
-      }
+      icon: <Activity className="w-6 h-6" />
     }
   ]
 
@@ -51,21 +38,9 @@ export default function About() {
     <>
       <Navigation />
       
-      <main className="min-h-screen bg-gradient-to-b from-blue-50 to-green-50">
+      <main className="min-h-screen">
         {/* Hero Section */}
-        <section className="relative py-20 overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-adventure opacity-5" />
-          <div className="container mx-auto px-4 relative">
-            <div className="max-w-4xl mx-auto text-center">
-              <h1 className="text-5xl font-bold mb-6">
-                About Source<span className="text-gradient-adventure"> of Adventure</span>
-              </h1>
-              <p className="text-xl text-gray-600 mb-8">
-                Where passion for adventure meets excellence in fitness training
-              </p>
-            </div>
-          </div>
-        </section>
+        <PageHeader eyebrow="About us" title="Fitness, but make it an" highlight="adventure" subtitle="Where passion for the outdoors meets excellence in fitness training." image="/all.jpeg" focus="center 35%" />
 
         {/* Mission & Vision */}
         <section className="py-20 bg-white">
@@ -113,7 +88,7 @@ export default function About() {
 
             <div className="grid md:grid-cols-3 gap-8">
               {teamMembers.map((member) => (
-                <div key={member.name} className="adventure-card group hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 bg-white">
+                <div key={member.name} className="adventure-card group flex flex-col hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 bg-white">
                   {/* Team Member Header with Image - FIXED */}
                   <div className="relative aspect-[4/3] overflow-hidden rounded-t-2xl">
                     <Image
@@ -153,7 +128,7 @@ export default function About() {
                   </div>
 
                   {/* Team Member Details */}
-                  <div className="p-6">
+                  <div className="flex flex-1 flex-col p-6">
                     {/* Role Title */}
                     <p className="text-sm font-semibold uppercase tracking-wider text-accent-600 mb-4">
                       PERSONAL TRAINER
@@ -182,36 +157,15 @@ export default function About() {
                       </div>
                     </div>
 
-                    {/* Social Links */}
-                    <div className="flex justify-center space-x-3">
-                      <a
-                        href={member.social.twitter}
-                        className="p-2 rounded-full bg-gray-100 text-gray-600 hover:bg-[#1DA1F2] hover:text-white transition-all duration-300 transform hover:scale-110"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        title="Twitter"
-                      >
-                        <Twitter className="w-4 h-4" />
-                      </a>
-                      <a
-                        href={member.social.linkedin}
-                        className="p-2 rounded-full bg-gray-100 text-gray-600 hover:bg-[#0077B5] hover:text-white transition-all duration-300 transform hover:scale-110"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        title="LinkedIn"
-                      >
-                        <Linkedin className="w-4 h-4" />
-                      </a>
-                      <a
-                        href={member.social.website}
-                        className="p-2 rounded-full bg-gray-100 text-gray-600 hover:bg-gradient-adventure hover:text-white transition-all duration-300 transform hover:scale-110"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        title="Website"
-                      >
-                        <Globe className="w-4 h-4" />
-                      </a>
-                    </div>
+                    <a
+                      href={whatsappLink(`Hi Source of Adventure! I'd like to train with ${member.name.split(' ')[0]}.`)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-auto inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#25D366] py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#1ebe5b]"
+                    >
+                      <MessageCircle className="w-4 h-4" />
+                      Train with {member.name.split(' ')[0]}
+                    </a>
                   </div>
                 </div>
               ))}

@@ -1,99 +1,29 @@
 // app/contact/page.tsx
 import Navigation from '@/components/ui/Navigation'
+import PageHeader from '@/components/ui/PageHeader'
 import Footer from '@/components/ui/Footer'
+import ContactForm from '@/components/contact/ContactForm'
+import { EMAIL, HOURS, LOCATION, PHONE_DISPLAY, PHONE_TEL, whatsappLink } from '@/lib/contact'
+
+export const metadata = { title: 'Contact Us' }
 
 export default function Contact() {
   return (
     <>
       <Navigation />
       
-      <main className="min-h-screen bg-gradient-to-b from-blue-50 to-green-50">
+      <main className="min-h-screen">
         {/* Hero */}
-        <section className="py-20 bg-gradient-adventure">
-          <div className="container mx-auto px-4 text-center">
-            <h1 className="text-5xl font-bold mb-6">
-                Contact <span className="text-gradient-adventure">Us</span>
-              </h1>
-            <p className="text-xl mb-8 max-w-2xl mx-auto text-gray-600">
-              Have questions? Ready to book your adventure? Get in touch with our team!
-            </p>
-          </div>
-        </section>
+        <PageHeader eyebrow="Contact" title="Let’s plan your" highlight="trip" subtitle="Questions, group bookings or a private adventure — we usually reply within the hour on WhatsApp." image="https://images.unsplash.com/photo-1509316785289-025f5b846b35?auto=format&fit=crop&w=2000" focus="center 50%" />
 
         {/* Contact Content */}
-        <section className="py-20">
+        <section className="py-12 md:py-20">
           <div className="container mx-auto px-4">
             <div className="grid lg:grid-cols-2 gap-12">
               {/* Contact Form */}
-              <div className="adventure-card p-8">
+              <div className="adventure-card p-6 sm:p-8">
                 <h2 className="text-3xl font-bold mb-6 text-gray-900">Send us a Message</h2>
-                <form className="space-y-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Full Name
-                    </label>
-                    <input
-                      type="text"
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent"
-                      placeholder="Your name"
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Email Address
-                    </label>
-                    <input
-                      type="email"
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent"
-                      placeholder="you@example.com"
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Phone Number
-                    </label>
-                    <input
-                      type="tel"
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent"
-                      placeholder="+1 (123) 456-7890"
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Interested In
-                    </label>
-                    <select className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent">
-                      <option>Select an option</option>
-                      <option>Adventures & Tours</option>
-                      <option>Fitness Classes</option>
-                      <option>Group Activities</option>
-                      <option>Corporate Events</option>
-                      <option>Partnership</option>
-                      <option>Other</option>
-                    </select>
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Message
-                    </label>
-                    <textarea
-                      rows={4}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent"
-                      placeholder="Tell us about your adventure needs..."
-                    />
-                  </div>
-                  
-                  <button
-                    type="submit"
-                    className="btn-adventure w-full py-4 text-lg"
-                  >
-                    Send Message
-                  </button>
-                </form>
+                <ContactForm />
               </div>
 
               {/* Contact Info */}
@@ -110,8 +40,11 @@ export default function Contact() {
                       </div>
                       <div>
                         <h4 className="font-bold text-gray-900">Phone</h4>
-                        <p className="text-gray-600">+254 (07) 01437959</p>
-                        <p className="text-sm text-gray-500">Mon-Fri 9am-6pm, Sat 10am-4pm</p>
+                        <a href={`tel:${PHONE_TEL}`} className="text-gray-600 hover:text-accent-600">{PHONE_DISPLAY}</a>
+                        <p className="text-sm text-gray-500">{HOURS}</p>
+                        <a href={whatsappLink()} target="_blank" rel="noopener noreferrer" className="text-sm font-semibold text-green-700 hover:underline">
+                          Chat on WhatsApp →
+                        </a>
                       </div>
                     </div>
                     
@@ -123,8 +56,7 @@ export default function Contact() {
                       </div>
                       <div>
                         <h4 className="font-bold text-gray-900">Email</h4>
-                        <p className="text-gray-600">info@sourceofadventure.com</p>
-                        <p className="text-gray-600">bookings@sourceofadventure.com</p>
+                        <a href={`mailto:${EMAIL}`} className="text-gray-600 hover:text-accent-600">{EMAIL}</a>
                       </div>
                     </div>
                     
@@ -137,9 +69,8 @@ export default function Contact() {
                       </div>
                       <div>
                         <h4 className="font-bold text-gray-900">Location</h4>
-                        <p className="text-gray-600">123 Adventure Lane</p>
-                        <p className="text-gray-600">Mountain View, CA 94040</p>
-                        <p className="text-sm text-gray-500">Multiple locations across the country</p>
+                        <p className="text-gray-600">{LOCATION}</p>
+                        <p className="text-sm text-gray-500">Adventures run at locations across Kenya</p>
                       </div>
                     </div>
                   </div>
@@ -151,7 +82,7 @@ export default function Contact() {
                     For emergencies during adventures, contact our 24/7 safety team:
                   </p>
                   <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                    <p className="text-red-800 font-bold">Emergency Line: +254 (07) 01437959-ADVN</p>
+                    <a href={`tel:${PHONE_TEL}`} className="text-red-800 font-bold">Emergency line: {PHONE_DISPLAY}</a>
                     <p className="text-red-600 text-sm">Available 24/7 for participants on active adventures</p>
                   </div>
                 </div>

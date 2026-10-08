@@ -1,204 +1,134 @@
-// components/ui/Navigation.tsx
 'use client'
 
+import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { useState, useEffect } from 'react'
 import { usePathname } from 'next/navigation'
-import { Menu, X, Calendar, Phone } from 'lucide-react'
+import { ArrowUpRight, Mail, Menu, MessageCircle, Phone, X } from 'lucide-react'
+import { EMAIL, PHONE_DISPLAY, PHONE_TEL, whatsappLink } from '@/lib/contact'
 
-const Navigation = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [scrolled, setScrolled] = useState(false)
+const links = [
+  { name: 'Home', path: '/' },
+  { name: 'Adventures', path: '/adventures' },
+  { name: 'Calendar', path: '/calendar' },
+  { name: 'Activities', path: '/activities' },
+  { name: 'Aerobics', path: '/aerobics' },
+  { name: 'Gallery', path: '/gallery' },
+  { name: 'About', path: '/about' },
+  { name: 'Contact', path: '/contact' },
+]
+
+export default function Navigation() {
   const pathname = usePathname()
+  const [open, setOpen] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
 
-  const navItems = [
-    { name: 'Home', path: '/' },
-    { name: 'About', path: '/about' },
-    { name: 'Adventures', path: '/adventures' },
-    { name: 'Gallery', path: '/gallery' },
-    { name: 'Aerobics', path: '/aerobics' },
-    { name: 'Activities', path: '/activities' },
-    { name: 'Calendar', path: '/calendar' },
-    { name: 'Contact', path: '/contact' },
-  ]
-
-  // Handle scroll effect
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 20)
-    }
-    window.addEventListener('scroll', handleScroll)
-    return () => window.removeEventListener('scroll', handleScroll)
+    const onScroll = () => setScrolled(window.scrollY > 8)
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  // Close mobile menu when route changes
-  useEffect(() => {
-    setIsMenuOpen(false)
-  }, [pathname])
+  useEffect(() => setOpen(false), [pathname])
 
-  // Prevent body scroll when menu is open
   useEffect(() => {
-    if (isMenuOpen) {
-      document.body.style.overflow = 'hidden'
-    } else {
-      document.body.style.overflow = 'unset'
-    }
+    document.body.style.overflow = open ? 'hidden' : ''
     return () => {
-      document.body.style.overflow = 'unset'
+      document.body.style.overflow = ''
     }
-  }, [isMenuOpen])
+  }, [open])
+
+  const isActive = (path: string) => (path === '/' ? pathname === '/' : pathname.startsWith(path))
 
   return (
-    <>
-      <nav className={`fixed top-0 z-50 w-full transition-all duration-300 ${
-        scrolled || isMenuOpen
-          ? 'bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-lg' 
-          : 'bg-white/80 backdrop-blur-md border-b border-gray-100'
-      }`}>
-        <div className="container mx-auto px-4 py-3">
-          <div className="flex items-center justify-between">
-            {/* Logo */}
-            <Link href="/" className="flex items-center space-x-3 z-50">
-              <div className="relative w-16 h-16">
-                <Image 
-                  src="/SOA Logo-03.png" 
-                  alt="Source of Adventure Logo" 
-                  width={64}
-                  height={64}
-                  className="object-contain"
-                />
-              </div>
-              <div className="hidden md:block">
-                <div className="flex flex-col">
-                  <span className="text-2xl font-bold text-gradient-adventure leading-tight">
-                    Source of Adventure
-                  </span>
-                  <span className="text-sm text-gray-600 font-medium">Fun & Fitness</span>
-                </div>
-              </div>
-            </Link>
+    <header className="sticky top-0 z-50 px-3 pt-3 sm:px-4">
+      <div
+        className={`mx-auto flex max-w-7xl items-center justify-between gap-3 rounded-2xl border px-3 py-2 transition-all duration-300 sm:px-4 lg:rounded-full ${
+          scrolled || open
+            ? 'border-stone-200/80 bg-white/85 shadow-[0_8px_30px_-12px_rgba(41,37,36,0.25)] backdrop-blur-xl'
+            : 'border-transparent bg-white/60 backdrop-blur-md'
+        }`}
+      >
+        <Link href="/" className="flex shrink-0 items-center gap-2.5" aria-label="Source of Adventure home">
+          <Image src="/SOA Logo-03.png" alt="" width={44} height={44} priority className="h-10 w-10 shrink-0" />
+          <span className="leading-tight">
+            <span className="block text-[15px] font-extrabold tracking-tight text-stone-900">Source of Adventure</span>
+            <span className="block text-[11px] font-medium text-stone-500">Fun &amp; Fitness</span>
+          </span>
+        </Link>
 
-            {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center space-x-6">
-              {navItems.map((item) => (
-                <Link
-                  key={item.name}
-                  href={item.path}
-                  className={`nav-link-accent font-medium text-gray-700 hover:text-accent-600 px-2 py-1 ${
-                    pathname === item.path ? 'nav-link-active' : ''
-                  }`}
-                >
-                  {item.name}
-                </Link>
-              ))}
-            </div>
-
-            {/* Desktop CTA Buttons */}
-            <div className="hidden md:flex items-center space-x-4">
-              <Link 
-                href="/contact" 
-                className="btn-adventure flex items-center gap-2"
-              >
-                <Phone className="w-4 h-4" />
-                Book Now
-              </Link>
-            </div>
-
-            {/* Mobile Menu Button */}
-            <button
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="md:hidden relative z-50 p-2 rounded-lg hover:bg-gray-100 transition-colors"
-              aria-label="Toggle menu"
+        <nav aria-label="Main" className="hidden items-center gap-0.5 xl:flex">
+          {links.map((l) => (
+            <Link
+              key={l.path}
+              href={l.path}
+              aria-current={isActive(l.path) ? 'page' : undefined}
+              className={`rounded-full px-3.5 py-2 text-sm font-semibold transition-colors ${
+                isActive(l.path) ? 'bg-stone-900 text-white' : 'text-stone-600 hover:bg-stone-100 hover:text-stone-900'
+              }`}
             >
-              {isMenuOpen ? (
-                <X className="h-6 w-6 text-gray-700" />
-              ) : (
-                <Menu className="h-6 w-6 text-gray-700" />
-              )}
-            </button>
-          </div>
+              {l.name}
+            </Link>
+          ))}
+        </nav>
+
+        <div className="flex items-center gap-1">
+          <Link
+            href="/adventures"
+            className="hidden items-center gap-1.5 rounded-full bg-accent-500 px-4 py-2.5 text-sm font-bold text-white transition-colors hover:bg-accent-600 sm:inline-flex"
+          >
+            Book now <ArrowUpRight className="h-4 w-4" />
+          </Link>
+          <button
+            onClick={() => setOpen((o) => !o)}
+            className="rounded-full p-2.5 text-stone-900 transition-colors hover:bg-stone-100 xl:hidden"
+            aria-label={open ? 'Close menu' : 'Open menu'}
+            aria-expanded={open}
+          >
+            {open ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          </button>
         </div>
+      </div>
 
-        {/* Mobile Menu Overlay */}
-        <div className={`md:hidden fixed inset-0 z-40 transition-all duration-300 ${
-          isMenuOpen
-            ? 'opacity-100 pointer-events-auto'
-            : 'opacity-0 pointer-events-none'
-        }`}>
-          {/* Backdrop */}
-          <div 
-            className={`absolute inset-0 bg-black transition-opacity duration-300 ${
-              isMenuOpen ? 'opacity-50' : 'opacity-0'
-            }`}
-            onClick={() => setIsMenuOpen(false)}
-          />
-          
-          {/* Mobile Menu Panel */}
-          <div className={`absolute top-0 right-0 h-full w-4/5 max-w-sm bg-white shadow-2xl transform transition-transform duration-300 ease-in-out ${
-            isMenuOpen ? 'translate-x-0' : 'translate-x-full'
-          }`}>
-            {/* Mobile Logo */}
-            <div className="px-4 py-6 border-b border-gray-50">
-              <div className="flex items-center space-x-3">
-                <div>
-                  <span className="text-xl font-bold text-gradient-adventure">
-                    Source of Adventure
-                  </span>
-                  <p className="text-xs text-gray-600">Fun & Fitness</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Mobile Navigation Items */}
-            <div className="px-2 py-4 bg-gray-50">
-              <div className="space-y-1">
-                {navItems.map((item) => (
-                  <Link
-                    key={item.name}
-                    href={item.path}
-                    className={`flex items-center px-4 py-3 rounded-lg text-lg font-medium transition-colors ${
-                      pathname === item.path
-                        ? 'bg-accent-50 text-accent-600'
-                        : 'text-gray-600 hover:bg-gray-50'
-                    }`}
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    {item.name}
-                  </Link>
-                ))}
-              </div>
-
-              {/* Mobile CTA Buttons */}
-              <div className="mt-6 space-y-2 px-4">
-                <Link 
-                  href="/contact" 
-                  className="btn-adventure w-full flex items-center justify-center gap-2 py-3"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  <Phone className="w-5 h-5" />
-                  Book Now
-                </Link>
-              </div>
-
-              {/* Contact Info */}
-              <div className="mt-8 pt-8 border-t border-gray-100 px-4">
-                <h4 className="text-sm font-semibold text-gray-500 mb-3">CONTACT US</h4>
-                <div className="space-y-2">
-                  <p className="text-gray-600">Email: info@sourceofadventure.com</p>
-                  <p className="text-gray-600">Phone: (254) 701437959</p>
-                  <p className="text-gray-600">Hours: Mon-Fri 6AM-8PM</p>
-                </div>
-              </div>
-            </div>
-          </div>
+      {/* Menu sheet (phones & tablets) */}
+      <div
+        className={`fixed inset-x-3 top-[5rem] bottom-3 z-40 overflow-y-auto rounded-3xl bg-white p-6 shadow-2xl transition-all duration-300 xl:hidden ${
+          open ? 'visible translate-y-0 opacity-100' : 'invisible -translate-y-2 opacity-0'
+        }`}
+      >
+        <nav aria-label="Mobile" className="flex flex-col">
+          {links.map((l) => (
+            <Link
+              key={l.path}
+              href={l.path}
+              className={`flex items-center justify-between border-b border-stone-100 py-3.5 text-2xl font-extrabold tracking-tight ${
+                isActive(l.path) ? 'text-accent-600' : 'text-stone-900'
+              }`}
+            >
+              {l.name}
+              <ArrowUpRight className="h-5 w-5 text-stone-300" />
+            </Link>
+          ))}
+        </nav>
+        <div className="mt-6 grid gap-3">
+          <Link href="/adventures" className="inline-flex items-center justify-center gap-2 rounded-2xl bg-accent-500 py-3.5 font-bold text-white">
+            Book an adventure
+          </Link>
+          <a
+            href={whatsappLink('Hi Source of Adventure! I have a question.')}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[#25D366] py-3.5 font-bold text-white"
+          >
+            <MessageCircle className="h-5 w-5" /> Chat on WhatsApp
+          </a>
         </div>
-      </nav>
-
-      {/* Add padding to prevent content from being hidden under fixed nav */}
-      <div className="h-20 md:h-24" />
-    </>
+        <div className="mt-6 space-y-2 text-sm text-stone-500">
+          <a href={`tel:${PHONE_TEL}`} className="flex items-center gap-2"><Phone className="h-4 w-4" /> {PHONE_DISPLAY}</a>
+          <a href={`mailto:${EMAIL}`} className="flex items-center gap-2"><Mail className="h-4 w-4" /> {EMAIL}</a>
+        </div>
+      </div>
+    </header>
   )
 }
-
-export default Navigation

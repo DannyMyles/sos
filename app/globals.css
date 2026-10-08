@@ -1,5 +1,8 @@
 @import './fonts/montserrat.css';
 @import "tailwindcss";
+/* Tailwind v4 only reads a JS config when told to — without this, the
+   accent/adventure colours, gradients and shadows below never existed. */
+@config "../tailwind.config.ts";
 
 @layer base {
   :root {
@@ -206,4 +209,76 @@
 
 .animate-flicker {
   animation: flicker 2s ease-in-out infinite;
+}
+/* Shared form field + bottom-sheet entrance for the booking flow. */
+@layer components {
+  .field {
+    width: 100%;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.75rem;
+    background: #fff;
+    padding: 0.75rem 1rem;
+    font-size: 1rem; /* 16px avoids iOS zoom-on-focus */
+    transition: border-color 150ms, box-shadow 150ms;
+  }
+  .field:focus {
+    outline: none;
+    border-color: #fb923c;
+    box-shadow: 0 0 0 3px rgba(251, 146, 60, 0.25);
+  }
+}
+
+html { scroll-behavior: smooth; }
+:focus-visible { outline: 2px solid #f97316; outline-offset: 2px; }
+
+/* Soft page-to-page transition (app/template.tsx). Opacity only — a
+   transform here would break position:sticky/fixed children. */
+@keyframes page-enter { from { opacity: 0; } to { opacity: 1; } }
+.page-enter { animation: page-enter 0.35s ease-out both; }
+
+@keyframes sheet-in {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ==========================================================================
+   UI layer v2 — shared primitives.
+   ========================================================================== */
+@layer components {
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+  .section-title {
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.08;
+    font-size: clamp(1.875rem, 1.2rem + 2.6vw, 3rem);
+  }
+}
+
+/* Scroll reveal — hidden only once JS runs (html.js, set in app/layout.tsx);
+   RevealObserver adds .is-visible as elements enter the screen. */
+html.js .reveal:not(.is-visible) { opacity: 0; transform: translateY(18px); }
+.reveal { transition: opacity 700ms cubic-bezier(0.22, 1, 0.36, 1), transform 700ms cubic-bezier(0.22, 1, 0.36, 1); }
+.reveal-delay-1 { transition-delay: 80ms; }
+.reveal-delay-2 { transition-delay: 160ms; }
+.reveal-delay-3 { transition-delay: 240ms; }
+@keyframes enter-up { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: none; } }
+.enter-up { animation: enter-up 0.8s cubic-bezier(0.22, 1, 0.36, 1) both; }
+@media (prefers-reduced-motion: reduce) {
+  html.js .reveal:not(.is-visible) { opacity: 1; transform: none; }
+  .reveal { transition: none; }
 }

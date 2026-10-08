@@ -1,6 +1,9 @@
 // app/activities/page.tsx
 import Navigation from '@/components/ui/Navigation'
+import PageHeader from '@/components/ui/PageHeader'
+import Link from 'next/link'
 import Footer from '@/components/ui/Footer'
+import { whatsappLink } from '@/lib/contact'
 
 
 const activities = [
@@ -65,19 +68,10 @@ export default function Activities() {
     <>
       <Navigation />
       
-      <main className="min-h-screen bg-gradient-to-b from-blue-50 to-green-50">
+      <main className="min-h-screen">
         {/* Hero */}
 
-        <section className="py-20 bg-gradient-adventure">
-          <div className="container mx-auto px-4 text-center">
-            <h1 className="text-5xl font-bold mb-6">
-                Outdoor <span className="text-gradient-adventure">Activities</span>
-              </h1>
-            <p className="text-xl mb-8 max-w-2xl mx-auto text-gray-600">
-              From leisurely nature walks to adrenaline-pumping adventures - find your perfect outdoor experience
-            </p>
-          </div>
-        </section>
+        <PageHeader eyebrow="Outdoor Activities" title="Something for" highlight="every pace" subtitle="From easy nature walks to adrenaline-pumping climbs — find your kind of outdoors." image="https://images.unsplash.com/photo-1541625602330-2277a4c46182?auto=format&fit=crop&w=2000" focus="center 55%" />
 
         {/* Activities Grid */}
         <section className="py-20">
@@ -114,9 +108,14 @@ export default function Activities() {
                     </div>
                   </div>
                   
-                  <button className="btn-adventure-outline w-full">
-                    Learn More
-                  </button>
+                  <a
+                    href={whatsappLink(`Hi Source of Adventure! I'd like to know more about ${activity.title}.`)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn-adventure-outline block w-full text-center"
+                  >
+                    Ask about this
+                  </a>
                 </div>
               ))}
             </div>
@@ -126,13 +125,13 @@ export default function Activities() {
         {/* CTA */}
         <section className="py-20 bg-gradient-sunset">
           <div className="container mx-auto px-4 text-center">
-            <h2 className="text-4xl font-bold mb-6">Ready for Your Next Adventure?</h2>
-            <p className="text-xl mb-8 max-w-2xl mx-auto">
-              Join thousands of adventurers who have discovered the joy of outdoor activities with us
+            <h2 className="text-3xl md:text-4xl font-bold mb-6 text-white">Ready for Your Next Adventure?</h2>
+            <p className="text-xl mb-8 max-w-2xl mx-auto text-white/90">
+              Pick a date, bring your crew, and confirm your spot on WhatsApp in under a minute.
             </p>
-            <button className=" btn-adventure-outline text-accent hover:bg-accent hover:text-white px-8 py-4 rounded-full text-lg font-bold transition-all duration-300 shadow-lg">
-              Book Your Activity Now
-            </button>
+            <Link href="/adventures" className="inline-block rounded-full bg-white px-8 py-4 text-lg font-bold text-accent-700 shadow-lg transition-transform hover:-translate-y-0.5">
+              See upcoming adventures
+            </Link>
           </div>
         </section>
       </main>
