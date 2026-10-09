@@ -6,9 +6,11 @@ export async function POST(req: NextRequest) {
   if (typeof email !== 'string' || typeof password !== 'string') {
     return NextResponse.json({ error: 'Email and password are required' }, { status: 400 })
   }
+  // Pass the visitor's address on so the API rate-limits per person, not per server.
+  const clientIp = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
   const res = await backend('/api/v1/auth/login', {
     method: 'POST',
-    headers: { 'content-type': 'application/json' },
+    headers: { 'content-type': 'application/json', ...(clientIp ? { 'x-forwarded-for': clientIp } : {}) },
     body: JSON.stringify({ email, password }),
   })
   const data = await res.json().catch(() => ({}))

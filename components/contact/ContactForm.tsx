@@ -1,35 +1,44 @@
 'use client'
 
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { AlertCircle, CheckCircle, Loader2, MessageCircle } from 'lucide-react'
-import { api } from '@/lib/api'
-import { whatsappLink } from '@/lib/contact'
+import { api, newRequestId } from '@/lib/api'
+import { useSite } from '@/components/site/SiteProvider'
+import { waLink } from '@/lib/site'
 import { PHONE_REGEX } from '@/lib/whatsappHandoff'
 
-const TOPICS = ['Adventures & Tours', 'Fitness Classes', 'Group Activities', 'Corporate / Private Trip', 'Partnership', 'Other']
+const TOPICS = ['Adventures & Tours', 'Outdoor Activities', 'Fitness Classes', 'Group Activities', 'Corporate / Private Trip', 'Partnership', 'Other']
 
 /**
- * Sends the message to the team's inbox through the shared API (as the
- * `sos` app). If email delivery is down, the same message can go out on
- * WhatsApp in one tap, so nothing the visitor typed is lost.
+ * Saves the message as an enquiry (visible in Admin → Enquiries) and emails
+ * the team. If the request fails, the same message can go out on WhatsApp
+ * in one tap, so nothing the visitor typed is lost.
  */
 export default function ContactForm() {
+  const site = useSite()
   const [form, setForm] = useState({ name: '', phone: '', email: '', service: '', message: '' })
   const [state, setState] = useState<'idle' | 'sending' | 'sent'>('idle')
   const [error, setError] = useState('')
+  const [reference, setReference] = useState('')
+  const requestId = useRef(newRequestId())
 
   const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
     setForm((f) => ({ ...f, [k]: e.target.value }))
 
   const asWhatsApp = () =>
-    whatsappLink(
-      [`Hi Source of Adventure, I'm ${form.name || 'interested'}.`, form.service && `Topic: ${form.service}`, form.message]
+    waLink(
+      site,
+      [`Hi ${site.name}, I'm ${form.name || 'interested'}.`, form.service && `Topic: ${form.service}`, form.message]
         .filter(Boolean)
         .join('\n')
     )
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (form.name.trim().length < 2) {
+      setError('Please enter your name')
+      return
+    }
     if (!PHONE_REGEX.test(form.phone.trim())) {
       setError('Please enter a valid phone number, e.g. 0712 345 678')
       return
@@ -37,13 +46,15 @@ export default function ContactForm() {
     setError('')
     setState('sending')
     try {
-      await api.contact({
+      const result = await api.contact({
         name: form.name.trim(),
         phone: form.phone.trim(),
         email: form.email.trim() || undefined,
         service: form.service || undefined,
         message: form.message.trim(),
+        requestId: requestId.current,
       })
+      setReference(result.reference)
       setState('sent')
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Could not send your message.')
@@ -57,6 +68,12 @@ export default function ContactForm() {
         <CheckCircle className="mx-auto mb-4 h-14 w-14 text-green-500" />
         <h3 className="mb-2 text-2xl font-bold">Message sent!</h3>
         <p className="text-gray-600">Thanks, {form.name.split(' ')[0]} — we’ll get back to you shortly.</p>
+        {reference && (
+          <p className="mt-2 text-sm text-gray-500">
+            Your reference: <span className="font-mono font-semibold text-gray-800">{reference}</span>
+            {form.email && ' · a copy is on its way to your inbox.'}
+          </p>
+        )}
       </div>
     )
   }

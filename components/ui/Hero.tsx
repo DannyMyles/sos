@@ -1,11 +1,16 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { ArrowUpRight, Check, MessageCircle } from 'lucide-react'
-import { whatsappLink } from '@/lib/contact'
+import { SiteInfo, waLink } from '@/lib/site'
 
-const perks = ['No account needed', 'Pay once confirmed', 'Groups welcome']
+const DEFAULT_PERKS = ['No account needed', 'Pay once confirmed', 'Groups welcome']
 
-const Hero = () => {
+/** Homepage hero — copy and photo are edited in Admin → Settings. */
+const Hero = ({ site }: { site: SiteInfo }) => {
+  const hero = site.settings.hero ?? {}
+  const perks = hero.perks?.length ? hero.perks : DEFAULT_PERKS
+  const secondaryHref = hero.secondaryCtaUrl || waLink(site, `Hi ${site.name}! I’d like to plan a trip.`)
+  const secondaryExternal = /^https?:/.test(secondaryHref)
   return (
     <section className="px-3 pt-3 sm:px-4">
       <div className="relative mx-auto max-w-7xl overflow-hidden rounded-4xl bg-gradient-to-br from-accent-100 via-[#fbf3ea] to-emerald-100/70">
@@ -16,31 +21,30 @@ const Hero = () => {
           <div className="enter-up text-center md:text-left">
             <p className="mb-5 inline-flex w-fit items-center gap-2 rounded-full bg-white/70 px-3.5 py-1.5 text-xs font-bold uppercase tracking-[0.14em] text-accent-700 ring-1 ring-accent-200">
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-              Fun &amp; Fitness Adventures · Kenya
+              {hero.eyebrow || 'Fun & Fitness Adventures · Kenya'}
             </p>
             <h1 className="text-5xl font-extrabold leading-[0.98] tracking-tight text-stone-900 sm:text-6xl lg:text-7xl">
-              Get outside.
+              {hero.title || 'Get outside.'}
               <br />
-              <span className="text-accent-500">Get stronger.</span>
+              <span className="text-accent-500">{hero.highlight || 'Get stronger.'}</span>
             </h1>
             <p className="mx-auto mt-6 max-w-lg text-lg text-stone-600 md:mx-0">
-              Hikes, rafting, rides and climbs with a crew that keeps it fun. Pick a date, add your name and phone,
-              and confirm your spot on WhatsApp.
+              {hero.subtitle ||
+                'Hikes, rafting, rides and climbs with a crew that keeps it fun. Pick a date, add your name and phone, and confirm your spot on WhatsApp.'}
             </p>
             <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row md:justify-start">
               <Link
-                href="/adventures"
+                href={hero.primaryCtaUrl || '/adventures'}
                 className="inline-flex items-center justify-center gap-2 rounded-full bg-stone-900 px-7 py-4 font-bold text-white transition-transform hover:-translate-y-0.5"
               >
-                Find an adventure <ArrowUpRight className="h-5 w-5" />
+                {hero.primaryCtaLabel || 'Find an adventure'} <ArrowUpRight className="h-5 w-5" />
               </Link>
               <a
-                href={whatsappLink('Hi Source of Adventure! I’d like to plan a trip.')}
-                target="_blank"
-                rel="noopener noreferrer"
+                href={secondaryHref}
+                {...(secondaryExternal ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
                 className="inline-flex items-center justify-center gap-2 rounded-full bg-white px-7 py-4 font-bold text-stone-900 ring-1 ring-stone-200 transition-colors hover:bg-stone-50"
               >
-                <MessageCircle className="h-5 w-5 text-[#25D366]" /> Chat with us
+                <MessageCircle className="h-5 w-5 text-[#25D366]" /> {hero.secondaryCtaLabel || 'Chat with us'}
               </a>
             </div>
             <ul className="mt-8 flex flex-wrap justify-center gap-x-5 gap-y-2 text-sm font-medium text-stone-600 md:justify-start">
@@ -54,11 +58,12 @@ const Hero = () => {
 
           <div className="enter-up relative mx-auto w-full max-w-sm md:max-w-md">
             <Image
-              src="/all.jpeg"
-              alt="The Source of Adventure crew ready to head out"
+              src={hero.imageUrl || '/all.jpeg'}
+              alt={`The ${site.name} crew ready to head out`}
               width={1202}
               height={1600}
               priority
+              unoptimized={/^https?:/.test(hero.imageUrl ?? '')}
               sizes="(min-width: 768px) 28rem, 90vw"
               className="aspect-4/5 w-full rotate-2 rounded-[1.75rem] object-cover shadow-2xl ring-8 ring-white/70"
             />

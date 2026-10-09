@@ -76,7 +76,7 @@ export default function AdventureCard({ adventure, onBook }: { adventure: Advent
           disabled={full}
           className="btn-adventure mt-auto w-full disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0"
         >
-          {full ? 'Fully booked' : 'Book this adventure'}
+          {full ? 'Fully booked' : adventure.kind === 'event' ? 'Save my spot' : 'Book this adventure'}
         </button>
       </div>
     </article>

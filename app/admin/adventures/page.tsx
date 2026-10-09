@@ -11,6 +11,7 @@ interface Draft {
   date: string
   time: string
   location: string
+  kind: 'adventure' | 'event'
   category: string
   difficulty: string
   duration: string
@@ -21,7 +22,7 @@ interface Draft {
 }
 
 const EMPTY: Draft = {
-  title: '', description: '', date: '', time: '7:00 AM', location: '', category: '', difficulty: '',
+  title: '', description: '', date: '', time: '7:00 AM', location: '', kind: 'adventure', category: '', difficulty: '',
   duration: '', price: '0', maxSpots: '15', imageUrl: '', published: true,
 }
 
@@ -34,6 +35,7 @@ function draftFrom(a: AdminAdventure): Draft {
     date: toDateInput(a.date),
     time: a.time,
     location: a.location,
+    kind: a.kind ?? 'adventure',
     category: a.category ?? '',
     difficulty: a.difficulty ?? '',
     duration: a.duration ?? '',
@@ -65,11 +67,11 @@ export default function AdventuresAdmin() {
     <div>
       <div className="mb-6 flex items-end justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold md:text-3xl">Adventures</h1>
-          <p className="text-gray-500">What visitors can see and book. Price 0 shows “Price on request”.</p>
+          <h1 className="text-2xl font-bold md:text-3xl">Adventures & events</h1>
+          <p className="text-gray-500">Trips show on Adventures, events on Events; both appear in the calendar. Price 0 shows “Price on request”.</p>
         </div>
         <button onClick={() => setEditing('new')} className="btn-adventure inline-flex shrink-0 items-center gap-2 px-4">
-          <Plus className="h-4 w-4" /> <span className="hidden sm:inline">New adventure</span><span className="sm:hidden">New</span>
+          <Plus className="h-4 w-4" /> <span className="hidden sm:inline">New adventure / event</span><span className="sm:hidden">New</span>
         </button>
       </div>
 
@@ -101,7 +103,12 @@ export default function AdventuresAdmin() {
                   </div>
                 </div>
                 <div className="space-y-2 p-4">
-                  <p className="font-bold leading-snug">{a.title}</p>
+                  <p className="font-bold leading-snug">
+                    {a.title}{' '}
+                    <span className={`ml-1 rounded-full px-2 py-0.5 align-middle text-[11px] font-semibold ${a.kind === 'event' ? 'bg-sky-100 text-sky-800' : 'bg-accent-100 text-accent-800'}`}>
+                      {a.kind === 'event' ? 'Event' : 'Adventure'}
+                    </span>
+                  </p>
                   <p className="flex flex-wrap gap-x-3 gap-y-1 text-sm text-gray-500">
                     <span className="inline-flex items-center gap-1"><Calendar className="h-3.5 w-3.5" />{formatDate(a.date)}</span>
                     <span className="inline-flex items-center gap-1"><MapPin className="h-3.5 w-3.5" />{a.location}</span>
@@ -164,7 +171,7 @@ function AdventureForm({ adventure, onClose, onSaved }: { adventure: AdminAdvent
     setBusy(true)
     setError('')
     const form = new FormData()
-    for (const k of ['title', 'description', 'date', 'time', 'location', 'category', 'difficulty', 'duration', 'price', 'maxSpots'] as const) {
+    for (const k of ['title', 'description', 'date', 'time', 'location', 'kind', 'category', 'difficulty', 'duration', 'price', 'maxSpots'] as const) {
       form.append(k, d[k].trim())
     }
     form.append('published', String(d.published))
@@ -189,7 +196,7 @@ function AdventureForm({ adventure, onClose, onSaved }: { adventure: AdminAdvent
         className="flex h-full w-full max-w-lg flex-col bg-white shadow-2xl animate-[sheet-in_200ms_ease-out]"
       >
         <div className="flex items-center justify-between border-b px-5 py-4">
-          <h2 className="text-lg font-bold">{adventure ? 'Edit adventure' : 'New adventure'}</h2>
+          <h2 className="text-lg font-bold">{adventure ? `Edit ${adventure.kind === 'event' ? 'event' : 'adventure'}` : 'New adventure or event'}</h2>
           <button type="button" onClick={onClose} className="rounded-lg p-2 hover:bg-gray-100" aria-label="Close"><X className="h-5 w-5" /></button>
         </div>
 
@@ -225,6 +232,13 @@ function AdventureForm({ adventure, onClose, onSaved }: { adventure: AdminAdvent
           <div className="grid grid-cols-2 gap-3">
             <div><label className={label} htmlFor="f-price">Price / person (KES)</label><input id="f-price" type="number" min={0} required value={d.price} onChange={set('price')} className="field" /></div>
             <div><label className={label} htmlFor="f-spots">Spots</label><input id="f-spots" type="number" min={1} required value={d.maxSpots} onChange={set('maxSpots')} className="field" /></div>
+          </div>
+          <div>
+            <label className={label} htmlFor="f-kind">Type</label>
+            <select id="f-kind" value={d.kind} onChange={set('kind')} className="field">
+              <option value="adventure">Adventure / trip — listed on Adventures</option>
+              <option value="event">Event — listed on Events (fun runs, workshops, meet-ups)</option>
+            </select>
           </div>
           <div className="grid grid-cols-3 gap-3">
             <div><label className={label} htmlFor="f-cat">Category</label><input id="f-cat" maxLength={60} value={d.category} onChange={set('category')} className="field" placeholder="Trekking" /></div>

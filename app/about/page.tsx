@@ -1,254 +1,171 @@
-// app/about/page.tsx
+import Image from 'next/image'
+import { Compass, Eye, MessageCircle, Sparkles } from 'lucide-react'
 import Navigation from '@/components/ui/Navigation'
 import PageHeader from '@/components/ui/PageHeader'
 import Footer from '@/components/ui/Footer'
-import { Dumbbell, Heart, Activity, MessageCircle } from 'lucide-react'
-import { whatsappLink } from '@/lib/contact'
-import Image from 'next/image'
+import { getSite, pageHeader, waLink } from '@/lib/site'
 
-export default function About() {
-  const teamMembers = [
-    {
-      name: 'Mark Sila',
-      role: 'Certified Personal Trainer',
-      description: 'With over 6 years in fitness education, Mark specializes in high-energy aerobics and personalized training programs. His dynamic approach transforms fitness routines into exhilarating experiences that build strength, endurance, and confidence.',
-      expertise: ['Personal Training', 'Aerobics Instruction', 'Cardio Conditioning', 'Fitness Programming'],
-      image: '/mark.jpeg',
-      icon: <Dumbbell className="w-6 h-6" />
-    },
-    {
-      name: 'Teddy Mist',
-      role: 'Fitness & Wellness Coach',
-      description: 'Certified personal trainer and yoga instructor specializing in adventure fitness. Teddy designs programs that prepare both body and mind for outdoor challenges.',
-      expertise: ['Fitness Training', 'Yoga & Mobility', 'Nutrition Planning', 'Mindfulness'],
-      image: '/teddy.jpeg',
-      icon: <Heart className="w-6 h-6" />
-    },
-    {
-      name: 'Edu Shark',
-      role: 'Water Sports & Survival Expert',
-      description: 'Navy veteran and professional dive instructor with expertise in all things aquatic. Edu Shark ensures safety while maximizing fun on water adventures.',
-      expertise: ['Scuba Diving', 'Survival Training', 'Marine Conservation', 'Water Safety'],
-      image: '/edu.jpeg',
-      icon: <Activity className="w-6 h-6" />
-    }
-  ]
+export const metadata = { title: 'About Us' }
+export const dynamic = 'force-dynamic'
+
+const ACCENTS = [
+  { ring: 'from-accent-900/50', chip: 'bg-accent-100 text-accent-800' },
+  { ring: 'from-emerald-900/50', chip: 'bg-emerald-100 text-emerald-800' },
+  { ring: 'from-sky-900/50', chip: 'bg-sky-100 text-sky-800' },
+]
+
+/** Everything on this page is edited in Admin → Settings (About, Team, Values). */
+export default async function About() {
+  const site = await getSite()
+  const about = site.settings.about ?? {}
+  const team = site.settings.team ?? []
+  const values = site.settings.values ?? []
+  const stats = site.settings.stats ?? []
+  const header = pageHeader(site, 'about', {
+    eyebrow: 'About us',
+    title: 'Fitness, but make it an',
+    highlight: 'adventure',
+    subtitle: about.body || 'Where passion for the outdoors meets excellence in fitness training.',
+    imageUrl: about.imageUrl || '/all.jpeg',
+  })
 
   return (
     <>
       <Navigation />
-      
       <main className="min-h-screen">
-        {/* Hero Section */}
-        <PageHeader eyebrow="About us" title="Fitness, but make it an" highlight="adventure" subtitle="Where passion for the outdoors meets excellence in fitness training." image="/all.jpeg" focus="center 35%" />
+        <PageHeader
+          eyebrow={header.eyebrow}
+          title={header.title}
+          highlight={header.highlight}
+          subtitle={header.subtitle}
+          image={header.imageUrl}
+          focus="center 35%"
+        />
 
-        {/* Mission & Vision */}
-        <section className="py-20 bg-white">
-          <div className="container mx-auto px-4">
-            <div className="grid md:grid-cols-2 gap-12">
-              <div className="adventure-card adventure-card-accent">
-                <div className="w-16 h-16 bg-accent/10 rounded-full flex items-center justify-center mb-6">
-                  <svg className="w-8 h-8 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
-                  </svg>
-                </div>
-                <h3 className="text-2xl font-bold mb-4 text-gray-900">Our Mission</h3>
-                <p className="text-gray-600">
-                  To inspire individuals to transform their fitness journey into an adventure, combining 
-                  expert training with exciting physical challenges that build strength, confidence, and vitality.
-                </p>
-              </div>
+        {(about.mission || about.vision) && (
+          <section className="bg-white py-16 md:py-20">
+            <div className="container mx-auto grid gap-6 px-4 md:grid-cols-2">
+              {[
+                { icon: Compass, title: 'Our Mission', text: about.mission },
+                { icon: Eye, title: 'Our Vision', text: about.vision },
+              ]
+                .filter((c) => c.text)
+                .map(({ icon: Icon, title, text }) => (
+                  <div key={title} className="reveal rounded-3xl border border-stone-100 bg-gradient-to-b from-accent-50/60 to-white p-8">
+                    <span className="mb-5 flex h-14 w-14 items-center justify-center rounded-full bg-accent-500 text-white">
+                      <Icon className="h-6 w-6" />
+                    </span>
+                    <h2 className="mb-3 text-2xl font-bold text-stone-900">{title}</h2>
+                    <p className="text-stone-600">{text}</p>
+                  </div>
+                ))}
+            </div>
+          </section>
+        )}
 
-              <div className="adventure-card adventure-card-accent">
-                <div className="w-16 h-16 bg-accent/10 rounded-full flex items-center justify-center mb-6">
-                  <svg className="w-8 h-8 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                </div>
-                <h3 className="text-2xl font-bold mb-4 text-gray-900">Our Vision</h3>
-                <p className="text-gray-600">
-                  Creating a world where fitness is not a chore but an adventure, where every workout 
-                  brings joy and every achievement builds a stronger, healthier community.
-                </p>
+        {about.story && (
+          <section className="py-16 md:py-20">
+            <div className="container mx-auto max-w-3xl px-4">
+              <p className="mb-2 text-xs font-bold uppercase tracking-[0.14em] text-accent-600">Our story</p>
+              <h2 className="mb-6 text-3xl font-extrabold tracking-tight md:text-4xl">{about.headline || 'How it started'}</h2>
+              <div className="space-y-4 text-lg leading-relaxed text-stone-700">
+                {about.story.split(/\n{2,}/).map((para, i) => (
+                  <p key={i}>{para}</p>
+                ))}
               </div>
             </div>
-          </div>
-        </section>
+          </section>
+        )}
 
-        {/* Meet Our Team */}
-        <section className="py-20 bg-gradient-to-b from-white to-blue-50">
-          <div className="container mx-auto px-4">
-            <div className="text-center mb-16">
-              <h2 className="text-4xl font-bold mb-4">Meet Our Expert Team</h2>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                Our certified professionals bring years of combined experience in fitness training, 
-                wellness coaching, and adventure sports to guide your journey.
-              </p>
-            </div>
-
-            <div className="grid md:grid-cols-3 gap-8">
-              {teamMembers.map((member) => (
-                <div key={member.name} className="adventure-card group flex flex-col hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 bg-white">
-                  {/* Team Member Header with Image - FIXED */}
-                  <div className="relative aspect-[4/3] overflow-hidden rounded-t-2xl">
-                    <Image
-                      src={member.image}
-                      alt={member.name}
-                      fill
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                      className="object-cover object-top" // Changed to show faces at top
-                      priority={member.name === 'Mark Sila'}
-                    />
-                    
-                    {/* LIGHT Overlay at bottom only for text readability */}
-                    <div className={`absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t ${
-                      member.name === 'Mark Sila' 
-                        ? 'from-accent-900/40 to-transparent' 
-                        : member.name === 'Teddy Mist'
-                        ? 'from-green-900/40 to-transparent'
-                        : 'from-blue-900/40 to-transparent'
-                    }`} />
-                    
-                    {/* Icon Badge - MOVED to bottom left */}
-                    <div className={`absolute bottom-4 left-4 w-12 h-12 rounded-full ${
-                      member.name === 'Mark Sila' 
-                        ? 'bg-accent-500 text-white' 
-                        : member.name === 'Teddy Mist'
-                        ? 'bg-green-500 text-white'
-                        : 'bg-blue-500 text-white'
-                    } flex items-center justify-center shadow-lg z-20`}>
-                      {member.icon}
-                    </div>
-                    
-                    {/* Name Display - WHITE TEXT for contrast */}
-                    <div className="absolute bottom-4 left-20 z-20">
-                      <h3 className="text-xl font-bold text-white drop-shadow-lg">{member.name.split(' ')[0]}</h3>
-                      <p className="text-white/90 font-medium">{member.name.split(' ')[1]}</p>
-                    </div>
-                  </div>
-
-                  {/* Team Member Details */}
-                  <div className="flex flex-1 flex-col p-6">
-                    {/* Role Title */}
-                    <p className="text-sm font-semibold uppercase tracking-wider text-accent-600 mb-4">
-                      PERSONAL TRAINER
-                    </p>
-                    
-                    <p className="text-gray-600 mb-6 leading-relaxed">{member.description}</p>
-
-                    {/* Expertise Tags */}
-                    <div className="mb-6">
-                      <h4 className="text-sm font-semibold text-gray-500 mb-3 uppercase tracking-wider">Specializations</h4>
-                      <div className="flex flex-wrap gap-2">
-                        {member.expertise.map((skill) => (
-                          <span
-                            key={skill}
-                            className={`px-3 py-1.5 rounded-full text-sm font-medium ${
-                              member.name === 'Mark Sila'
-                                ? 'bg-accent-100 text-accent-800'
-                                : member.name === 'Teddy Mist'
-                                ? 'bg-green-100 text-green-800'
-                                : 'bg-blue-100 text-blue-800'
-                            }`}
-                          >
-                            {skill}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-
-                    <a
-                      href={whatsappLink(`Hi Source of Adventure! I'd like to train with ${member.name.split(' ')[0]}.`)}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="mt-auto inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#25D366] py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#1ebe5b]"
-                    >
-                      <MessageCircle className="w-4 h-4" />
-                      Train with {member.name.split(' ')[0]}
-                    </a>
-                  </div>
+        {stats.length > 0 && (
+          <section className="py-12">
+            <div className="container mx-auto grid grid-cols-2 gap-4 px-4 md:grid-cols-4">
+              {stats.map((s) => (
+                <div key={s.label} className="rounded-2xl bg-stone-900 p-6 text-center text-white">
+                  <p className="text-3xl font-extrabold text-accent-400">{s.value}</p>
+                  <p className="text-sm text-white/70">{s.label}</p>
                 </div>
               ))}
             </div>
-          </div>
-        </section>
+          </section>
+        )}
 
-        {/* Training Philosophy Section */}
-        <section className="py-20 bg-white">
-          <div className="container mx-auto px-4">
-            <div className="max-w-4xl mx-auto text-center">
-              <h2 className="text-4xl font-bold mb-6">Our Training Philosophy</h2>
-              <p className="text-xl text-gray-600 mb-12">
-                Led by Mark Sila's expertise, we believe fitness should be an adventure, not a routine.
-              </p>
-              
-              <div className="grid md:grid-cols-3 gap-8">
-                {[
-                  {
-                    title: 'Personalized Approach',
-                    description: 'Custom programs tailored to your fitness level and adventure goals',
-                    icon: '🎯'
-                  },
-                  {
-                    title: 'High-Energy Sessions',
-                    description: 'Dynamic aerobics and cardio that keep workouts exciting and effective',
-                    icon: '⚡'
-                  },
-                  {
-                    title: 'Adventure Integration',
-                    description: 'Training that prepares you for real-world challenges and outdoor activities',
-                    icon: '🏞️'
-                  }
-                ].map((principle, index) => (
-                  <div key={index} className="text-center p-6">
-                    <div className="text-5xl mb-4">{principle.icon}</div>
-                    <h3 className="text-xl font-bold mb-3 text-gray-900">{principle.title}</h3>
-                    <p className="text-gray-600">{principle.description}</p>
+        {team.length > 0 && (
+          <section className="bg-gradient-to-b from-white to-stone-50 py-16 md:py-20">
+            <div className="container mx-auto px-4">
+              <div className="mb-12 text-center">
+                <h2 className="mb-4 text-3xl font-bold md:text-4xl">Meet the team</h2>
+                <p className="mx-auto max-w-3xl text-lg text-stone-600">
+                  Certified professionals with years of experience in fitness training, wellness coaching and adventure sports.
+                </p>
+              </div>
+              <div className={`grid gap-8 ${team.length >= 3 ? 'md:grid-cols-2 lg:grid-cols-3' : 'md:grid-cols-2'}`}>
+                {team.map((member, i) => {
+                  const accent = ACCENTS[i % ACCENTS.length]
+                  const [first, ...rest] = member.name.split(' ')
+                  return (
+                    <article key={member.name} className="group flex flex-col overflow-hidden rounded-3xl border border-stone-100 bg-white shadow-sm transition-all hover:-translate-y-1 hover:shadow-xl">
+                      <div className="relative aspect-[4/3] overflow-hidden bg-stone-200">
+                        {member.imageUrl && (
+                          <Image
+                            src={member.imageUrl}
+                            alt={member.name}
+                            fill
+                            unoptimized={/^https?:/.test(member.imageUrl)}
+                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                            className="object-cover object-top"
+                          />
+                        )}
+                        <div className={`absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t ${accent.ring} to-transparent`} />
+                        <div className="absolute bottom-4 left-5 text-white drop-shadow-lg">
+                          <h3 className="text-xl font-bold">{first}</h3>
+                          {rest.length > 0 && <p className="font-medium text-white/90">{rest.join(' ')}</p>}
+                        </div>
+                      </div>
+                      <div className="flex flex-1 flex-col p-6">
+                        <p className="mb-4 text-sm font-semibold uppercase tracking-wider text-accent-600">{member.role}</p>
+                        <p className="mb-6 leading-relaxed text-stone-600">{member.bio}</p>
+                        {member.expertise && member.expertise.length > 0 && (
+                          <div className="mb-6 flex flex-wrap gap-2">
+                            {member.expertise.map((skill) => (
+                              <span key={skill} className={`rounded-full px-3 py-1.5 text-sm font-medium ${accent.chip}`}>{skill}</span>
+                            ))}
+                          </div>
+                        )}
+                        <a
+                          href={waLink(site, `Hi ${site.name}! I'd like to train with ${first}.`)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="mt-auto inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#25D366] py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#1ebe5b]"
+                        >
+                          <MessageCircle className="h-4 w-4" /> Train with {first}
+                        </a>
+                      </div>
+                    </article>
+                  )
+                })}
+              </div>
+            </div>
+          </section>
+        )}
+
+        {values.length > 0 && (
+          <section className="bg-white py-16 md:py-20">
+            <div className="container mx-auto px-4">
+              <h2 className="mb-12 text-center text-3xl font-bold md:text-4xl">What we stand for</h2>
+              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                {values.map((v) => (
+                  <div key={v.title} className="reveal rounded-2xl border border-stone-100 p-6">
+                    <Sparkles className="mb-3 h-6 w-6 text-accent-500" />
+                    <h3 className="mb-2 text-lg font-bold text-stone-900">{v.title}</h3>
+                    <p className="text-stone-600">{v.text}</p>
                   </div>
                 ))}
               </div>
             </div>
-          </div>
-        </section>
-
-        {/* Values */}
-        <section className="py-20 bg-gradient-to-b from-blue-50 to-white">
-          <div className="container mx-auto px-4">
-            <h2 className="text-4xl font-bold text-center mb-12">Our Core Values</h2>
-            <div className="grid md:grid-cols-3 gap-8">
-              {[
-                { 
-                  title: 'Expert Training', 
-                  desc: 'Professional guidance from certified fitness experts', 
-                  icon: '👨‍🏫',
-                  color: 'from-accent-500 to-accent-600'
-                },
-                { 
-                  title: 'Energy & Fun', 
-                  desc: 'High-energy workouts that make fitness enjoyable', 
-                  icon: '💃',
-                  color: 'from-orange-500 to-amber-500'
-                },
-                { 
-                  title: 'Adventure Spirit', 
-                  desc: 'Every workout is a step toward your next adventure', 
-                  icon: '🧗',
-                  color: 'from-green-500 to-emerald-500'
-                },
-              ].map((value) => (
-                <div key={value.title} className="text-center p-8 bg-white rounded-2xl shadow-xl">
-                  <div className={`inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-r ${value.color} mb-6`}>
-                    <span className="text-3xl">{value.icon}</span>
-                  </div>
-                  <h3 className="text-2xl font-bold mb-3 text-gray-900">{value.title}</h3>
-                  <p className="text-gray-600">{value.desc}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
+          </section>
+        )}
       </main>
-
       <Footer />
     </>
   )

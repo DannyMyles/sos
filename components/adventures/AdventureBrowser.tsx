@@ -3,12 +3,13 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Compass, MessageCircle, RefreshCw } from 'lucide-react'
 import { Adventure, api } from '@/lib/api'
-import { whatsappLink } from '@/lib/contact'
+import { useSite } from '@/components/site/SiteProvider'
+import { waLink } from '@/lib/site'
 import AdventureCard from './AdventureCard'
 import BookingModal from '@/components/booking/BookingModal'
 
-/** Loads upcoming adventures from the shared API (this app's data only). */
-export function useAdventures() {
+/** Loads upcoming adventures and/or events from the shared API (this app's data only). */
+export function useAdventures(kind?: 'adventure' | 'event') {
   const [adventures, setAdventures] = useState<Adventure[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -17,11 +18,11 @@ export function useAdventures() {
     setLoading(true)
     setError('')
     api
-      .adventures({ upcoming: true })
+      .adventures({ upcoming: true, kind })
       .then(setAdventures)
       .catch((e) => setError(e instanceof Error ? e.message : 'Could not load adventures.'))
       .finally(() => setLoading(false))
-  }, [])
+  }, [kind])
 
   useEffect(load, [load])
   return { adventures, loading, error, reload: load }
@@ -46,10 +47,14 @@ interface AdventureBrowserProps {
   filters?: boolean
   /** Cap the number of cards (e.g. on the home page). */
   limit?: number
+  /** Only adventures (trips) or only events; both when omitted. */
+  kind?: 'adventure' | 'event'
 }
 
-export default function AdventureBrowser({ filters = false, limit }: AdventureBrowserProps) {
-  const { adventures, loading, error, reload } = useAdventures()
+export default function AdventureBrowser({ filters = false, limit, kind = 'adventure' }: AdventureBrowserProps) {
+  const site = useSite()
+  const { adventures, loading, error, reload } = useAdventures(kind)
+  const noun = kind === 'event' ? 'events' : 'adventures'
   const [category, setCategory] = useState('All')
   const [difficulty, setDifficulty] = useState('Any level')
   const [booking, setBooking] = useState<Adventure | null>(null)
@@ -113,7 +118,7 @@ export default function AdventureBrowser({ filters = false, limit }: AdventureBr
         <div className="mx-auto max-w-md rounded-2xl border border-gray-100 bg-white p-8 text-center">
           <Compass className="mx-auto mb-3 h-10 w-10 text-accent-400" />
           <p className="mb-1 font-semibold text-gray-900">
-            {adventures.length === 0 ? 'New adventures are coming soon' : 'Nothing matches these filters'}
+            {adventures.length === 0 ? `New ${noun} are coming soon` : 'Nothing matches these filters'}
           </p>
           <p className="mb-5 text-sm text-gray-600">
             {adventures.length === 0
@@ -121,7 +126,7 @@ export default function AdventureBrowser({ filters = false, limit }: AdventureBr
               : 'Try another category or level.'}
           </p>
           {adventures.length === 0 ? (
-            <a href={whatsappLink('Hi Source of Adventure! What adventures do you have coming up?')} target="_blank"
+            <a href={waLink(site, `Hi ${site.name}! What ${noun} do you have coming up?`)} target="_blank"
               rel="noopener noreferrer" className="btn-adventure inline-flex items-center gap-2">
               <MessageCircle className="h-4 w-4" /> Ask on WhatsApp
             </a>

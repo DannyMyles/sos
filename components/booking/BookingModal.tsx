@@ -1,8 +1,10 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { AlertCircle, Calendar, CheckCircle, Loader2, MapPin, MessageCircle, Minus, Plus, X } from 'lucide-react'
-import { Adventure, BookingResult, api, formatDate, formatKES, priceLabel } from '@/lib/api'
+import { Adventure, BookingResult, api, formatDate, formatKES, newRequestId, priceLabel } from '@/lib/api'
+import { useSite } from '@/components/site/SiteProvider'
 import {
   PHONE_REGEX,
   cancelWhatsAppTab,
@@ -25,9 +27,12 @@ interface BookingModalProps {
  * team confirms the spot and payment in that chat.
  */
 export default function BookingModal({ adventure, onClose, onBooked }: BookingModalProps) {
+  const site = useSite()
   const maxPeople = Math.max(1, Math.min(20, adventure.spotsRemaining))
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
+  const [email, setEmail] = useState('')
+  const requestId = useRef(newRequestId())
   const [people, setPeople] = useState(1)
   const [notes, setNotes] = useState('')
   const [error, setError] = useState('')
@@ -44,9 +49,10 @@ export default function BookingModal({ adventure, onClose, onBooked }: BookingMo
 
   useEffect(() => {
     const saved = loadContactDetails()
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+     
     setName(saved.name ?? '')
     setPhone(saved.phone ?? '')
+    setEmail(saved.email ?? '')
     firstField.current?.focus()
     const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onCloseRef.current()
     window.addEventListener('keydown', onKey)
@@ -64,6 +70,10 @@ export default function BookingModal({ adventure, onClose, onBooked }: BookingMo
       setError('Please enter a valid phone number, e.g. 0712 345 678')
       return
     }
+    if (email.trim() && !/^\S+@\S+\.\S+$/.test(email.trim())) {
+      setError('Please enter a valid email address, or leave it blank')
+      return
+    }
     setError('')
     setSubmitting(true)
     const tab = reserveWhatsAppTab()
@@ -71,10 +81,12 @@ export default function BookingModal({ adventure, onClose, onBooked }: BookingMo
       const result = await api.book(adventure.slug, {
         attendeeName: name.trim(),
         attendeePhone: phone.trim(),
+        attendeeEmail: email.trim() || undefined,
         participants: people,
         notes: notes.trim() || undefined,
+        requestId: requestId.current,
       })
-      saveContactDetails({ name: name.trim(), phone: phone.trim() })
+      saveContactDetails({ name: name.trim(), phone: phone.trim(), email: email.trim() || undefined })
       if (result.whatsapp) setOpened(sendToWhatsApp(tab, result.whatsapp.url))
       else cancelWhatsAppTab(tab)
       setBooked(result)
@@ -87,7 +99,7 @@ export default function BookingModal({ adventure, onClose, onBooked }: BookingMo
     }
   }
 
-  return (
+  return createPortal(
     <div
       className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center bg-black/50 backdrop-blur-sm sm:p-4"
       onClick={onClose}
@@ -145,6 +157,7 @@ export default function BookingModal({ adventure, onClose, onBooked }: BookingMo
                   ? 'WhatsApp has opened with your booking — tap Send and we’ll confirm your spot.'
                   : 'Send your booking to us on WhatsApp and we’ll confirm your spot.'}
               </p>
+              {email && <p className="-mt-4 mb-4 text-xs text-gray-500">Your e-ticket is on its way to {email}.</p>}
               {booked.whatsapp && (
                 <a
                   href={booked.whatsapp.url}
@@ -171,6 +184,13 @@ export default function BookingModal({ adventure, onClose, onBooked }: BookingMo
                 <label htmlFor="bk-phone" className="mb-1.5 block text-sm font-medium text-gray-700">Phone (WhatsApp)</label>
                 <input id="bk-phone" type="tel" inputMode="tel" required maxLength={20} autoComplete="tel" value={phone}
                   onChange={(e) => setPhone(e.target.value)} className="field" placeholder="0712 345 678" />
+              </div>
+              <div>
+                <label htmlFor="bk-email" className="mb-1.5 block text-sm font-medium text-gray-700">
+                  Email <span className="font-normal text-gray-400">(optional — for your e-ticket)</span>
+                </label>
+                <input id="bk-email" type="email" maxLength={255} autoComplete="email" value={email}
+                  onChange={(e) => setEmail(e.target.value)} className="field" placeholder="you@example.com" />
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm font-medium text-gray-700">
@@ -213,11 +233,15 @@ export default function BookingModal({ adventure, onClose, onBooked }: BookingMo
                 {submitting ? <Loader2 className="h-5 w-5 animate-spin" /> : <MessageCircle className="h-5 w-5" />}
                 {submitting ? 'Booking…' : 'Book on WhatsApp'}
               </button>
-              <p className="text-center text-xs text-gray-500">No payment now — we confirm your spot and payment on WhatsApp.</p>
+              <p className="text-center text-xs text-gray-500">
+                {site.settings.booking?.whatsappNotice || 'No payment now — we confirm your spot and payment on WhatsApp.'}
+              </p>
             </form>
           )}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
+
   )
 }

@@ -1,21 +1,21 @@
 'use client'
 
-import { usePathname } from 'next/navigation'
-import { MessageCircle } from 'lucide-react'
-import { whatsappLink } from '@/lib/contact'
+import WhatsAppWidget from '@/components/site/WhatsAppWidget'
+import { useSite } from '@/components/site/SiteProvider'
 
-/** Floating "chat with us" shortcut on every public page (not the admin area). */
+/** Floating WhatsApp chat on every public page (not the admin area). */
 export default function WhatsAppButton() {
-  if (usePathname().startsWith('/admin')) return null
+  const { name } = useSite()
   return (
-    <a
-      href={whatsappLink('Hi Source of Adventure! I have a question about your adventures.')}
-      target="_blank"
-      rel="noopener noreferrer"
-      aria-label="Chat with us on WhatsApp"
-      className="fixed bottom-5 right-5 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-[#25D366] text-white shadow-lg shadow-green-900/20 transition-transform hover:scale-105 focus:outline-none focus-visible:ring-4 focus-visible:ring-green-300"
-    >
-      <MessageCircle className="h-7 w-7" />
-    </a>
+    <WhatsAppWidget
+      greeting="Hey! 👋 Planning an adventure? Pick a topic and we’ll pick it up on WhatsApp."
+      options={[
+        { label: 'Book an adventure', message: `Hi ${name}! I'd like to book an adventure. Which dates are coming up?` },
+        { label: 'Join an event', message: `Hi ${name}! Which events are coming up?` },
+        { label: 'Corporate / team outing', message: `Hi ${name}! I'd like a quote for a corporate or team outing. Company: , group size: , preferred date: ` },
+        { label: 'Join a fitness class', message: `Hi ${name}! I'd like to join one of your outdoor fitness classes.` },
+        { label: 'Something else', message: `Hi ${name}! I have a question.` },
+      ]}
+    />
   )
 }

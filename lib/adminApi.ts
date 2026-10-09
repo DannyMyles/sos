@@ -2,24 +2,7 @@
 
 import type { Adventure } from './api'
 
-/** Browser-side calls for the admin screens (through /admin-api — see app/admin-api). */
-export type BookingStatus = 'pending' | 'confirmed' | 'cancelled'
-
-export interface AdminBooking {
-  id: number
-  ticketNumber: string
-  attendeeName: string
-  attendeePhone: string
-  attendeeEmail: string | null
-  participants: number
-  total: number
-  notes: string | null
-  status: BookingStatus
-  checkedInAt: string | null
-  createdAt: string
-  event: { id: number; title: string; slug: string; date: string; time: string; location: string }
-}
-
+/** Browser-side calls for the sign-in and adventure screens (through /admin-api — see app/admin-api). */
 export interface AdminAdventure extends Adventure {
   published: boolean
 }
@@ -54,19 +37,8 @@ export const adminApi = {
     }),
   logout: () => fetch('/admin-api/logout', { method: 'POST' }),
 
-  bookings: (status?: BookingStatus) =>
-    call<{ registrations: AdminBooking[] }>(`events/registrations/all${status ? `?status=${status}` : ''}`).then((r) => r.registrations),
-  setBookingStatus: (id: number, status: BookingStatus) =>
-    call(`events/registrations/${id}/status`, { method: 'PATCH', body: JSON.stringify({ status }) }),
-
   adventures: () => call<{ events: AdminAdventure[] }>('events?all=true').then((r) => r.events),
   saveAdventure: (id: number | null, form: FormData) =>
     call<{ event: AdminAdventure }>(id ? `events/${id}` : 'events', { method: id ? 'PUT' : 'POST', body: form }).then((r) => r.event),
   deleteAdventure: (id: number) => call(`events/${id}`, { method: 'DELETE' }),
-}
-
-/** Customer phone as a wa.me number (Kenyan 07…/01… → 2547…/2541…). */
-export function waNumber(phone: string) {
-  const d = phone.replace(/\D/g, '')
-  return d.startsWith('0') && d.length === 10 ? `254${d.slice(1)}` : d
 }

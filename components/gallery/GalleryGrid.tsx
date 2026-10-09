@@ -26,7 +26,9 @@ const BASE_PHOTOS: Photo[] = [
 ]
 
 export default function GalleryGrid() {
-  const [photos, setPhotos] = useState<Photo[]>(BASE_PHOTOS)
+  // Uploaded photos (Admin → Website content → Gallery); the starter set only
+  // shows until the first photos are uploaded.
+  const [photos, setPhotos] = useState<Photo[] | null>(null)
   const [open, setOpen] = useState<number | null>(null)
   const touchX = useRef<number | null>(null)
 
@@ -34,15 +36,13 @@ export default function GalleryGrid() {
     api
       .galleryImages()
       .then((images) => {
-        if (images.length) setPhotos([...images.map((i) => ({ src: i.url, alt: i.title || 'Adventure photo' })), ...BASE_PHOTOS])
+        setPhotos(images.length ? images.map((i) => ({ src: i.url, alt: i.title || 'Adventure photo' })) : BASE_PHOTOS)
       })
-      .catch(() => {
-        /* the built-in photos are enough if the gallery can't load */
-      })
+      .catch(() => setPhotos(BASE_PHOTOS))
   }, [])
 
   const close = useCallback(() => setOpen(null), [])
-  const step = useCallback((d: number) => setOpen((i) => (i === null ? i : (i + d + photos.length) % photos.length)), [photos.length])
+  const step = useCallback((d: number) => setOpen((i) => (i === null ? i : (i + d + (photos?.length ?? 1)) % (photos?.length ?? 1))), [photos?.length])
 
   useEffect(() => {
     if (open === null) return
@@ -59,6 +59,16 @@ export default function GalleryGrid() {
       document.body.style.overflow = overflow
     }
   }, [open, close, step])
+
+  if (!photos) {
+    return (
+      <div className="columns-2 gap-3 sm:gap-4 md:columns-3 lg:columns-4" aria-busy="true" aria-label="Loading photos">
+        {[56, 72, 48, 64, 52, 68, 60, 44].map((h, i) => (
+          <div key={i} className="mb-3 animate-pulse rounded-2xl bg-gray-200 sm:mb-4" style={{ height: `${h * 4}px` }} />
+        ))}
+      </div>
+    )
+  }
 
   return (
     <>

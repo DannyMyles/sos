@@ -23,6 +23,8 @@ export default function PageHeader({ eyebrow, title, highlight, subtitle, image,
           alt=""
           fill
           priority
+          // Admin-supplied URLs may come from any host; only Unsplash is optimised.
+          unoptimized={/^https?:/.test(image) && !image.startsWith('https://images.unsplash.com/')}
           sizes="(min-width: 1280px) 1280px, 100vw"
           className="object-cover"
           style={{ objectPosition: focus }}

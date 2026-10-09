@@ -1,13 +1,14 @@
 import Image from 'next/image'
 import Link from 'next/link'
-import { ArrowUpRight, Mail, MapPin, MessageCircle, Phone } from 'lucide-react'
-import { EMAIL, LOCATION, PHONE_DISPLAY, PHONE_TEL, whatsappLink } from '@/lib/contact'
+import { ArrowUpRight, Clock, Mail, MapPin, MessageCircle, Phone } from 'lucide-react'
+import { getSite, telHref, waLink } from '@/lib/site'
 import NewsletterForm from './NewsletterForm'
 
 const quickLinks = [
   { name: 'Home', href: '/' },
   { name: 'About Us', href: '/about' },
   { name: 'Adventures', href: '/adventures' },
+  { name: 'Events', href: '/events' },
   { name: 'Calendar', href: '/calendar' },
   { name: 'Gallery', href: '/gallery' },
   { name: 'Contact', href: '/contact' },
@@ -16,11 +17,22 @@ const quickLinks = [
 const services = [
   { name: 'Group Adventures', href: '/adventures' },
   { name: 'Outdoor Activities', href: '/activities' },
-  { name: 'Aerobics & Fitness', href: '/aerobics' },
-  { name: 'Private & Corporate Trips', href: '/contact' },
+  { name: 'Fitness Classes', href: '/activities#classes' },
+  { name: 'Corporate & Team Building', href: '/corporate' },
 ]
 
-const Footer = () => {
+const SOCIAL_LABELS: Record<string, string> = {
+  instagram: 'Instagram',
+  facebook: 'Facebook',
+  tiktok: 'TikTok',
+  youtube: 'YouTube',
+  x: 'X',
+  linkedin: 'LinkedIn',
+}
+
+const Footer = async () => {
+  const site = await getSite()
+  const socials = Object.entries(site.settings.social ?? {}).filter(([, url]) => url)
   return (
     <footer className="relative overflow-hidden bg-stone-950 pb-24 text-white sm:pb-0">
       <div className="pointer-events-none absolute -top-40 left-1/2 h-80 w-[60rem] -translate-x-1/2 rounded-full bg-accent-500/20 blur-3xl" aria-hidden />
@@ -36,7 +48,7 @@ const Footer = () => {
             <Link href="/adventures" className="inline-flex items-center gap-2 rounded-full bg-accent-500 px-6 py-3.5 font-bold text-white transition-colors hover:bg-accent-600">
               See adventures <ArrowUpRight className="h-4 w-4" />
             </Link>
-            <a href={whatsappLink('Hi Source of Adventure! I’d like to plan a trip.')} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full border border-white/20 px-6 py-3.5 font-bold text-white transition-colors hover:bg-white/10">
+            <a href={waLink(site, `Hi ${site.name}! I’d like to plan a trip.`)} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full border border-white/20 px-6 py-3.5 font-bold text-white transition-colors hover:bg-white/10">
               <MessageCircle className="h-4 w-4" /> Chat on WhatsApp
             </a>
           </div>
@@ -44,34 +56,45 @@ const Footer = () => {
         <div className="grid gap-10 py-14 md:grid-cols-2 lg:grid-cols-4">
           <div>
             <Link href="/" className="mb-5 flex items-center gap-3">
-              <Image src="/SOA Logo-03.png" alt="Source of Adventure logo" width={72} height={72} />
+              <Image src="/SOA Logo-03.png" alt={`${site.name} logo`} width={72} height={72} />
               <div>
-                <span className="text-xl font-bold text-gradient-adventure">Source of Adventure</span>
+                <span className="text-xl font-bold text-gradient-adventure">{site.name}</span>
                 <p className="text-xs text-gray-300">Fun &amp; Fitness</p>
               </div>
             </Link>
             <p className="mb-5 text-gray-400">
-              Adventures that combine thrilling experiences with fitness and fun.
+              {site.tagline || 'Adventures that combine thrilling experiences with fitness and fun.'}
             </p>
             <ul className="space-y-2 text-sm text-gray-300">
               <li>
-                <a href={whatsappLink()} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-accent">
+                <a href={waLink(site)} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-accent">
                   <MessageCircle className="h-4 w-4" /> WhatsApp us
                 </a>
               </li>
-              <li>
-                <a href={`tel:${PHONE_TEL}`} className="flex items-center gap-2 hover:text-accent">
-                  <Phone className="h-4 w-4" /> {PHONE_DISPLAY}
-                </a>
-              </li>
-              <li>
-                <a href={`mailto:${EMAIL}`} className="flex items-center gap-2 hover:text-accent">
-                  <Mail className="h-4 w-4" /> {EMAIL}
-                </a>
-              </li>
-              <li className="flex items-center gap-2">
-                <MapPin className="h-4 w-4" /> {LOCATION}
-              </li>
+              {site.contactPhone && (
+                <li>
+                  <a href={telHref(site.contactPhone)} className="flex items-center gap-2 hover:text-accent">
+                    <Phone className="h-4 w-4" /> {site.contactPhone}
+                  </a>
+                </li>
+              )}
+              {site.contactEmail && (
+                <li>
+                  <a href={`mailto:${site.contactEmail}`} className="flex items-center gap-2 break-all hover:text-accent">
+                    <Mail className="h-4 w-4 shrink-0" /> {site.contactEmail}
+                  </a>
+                </li>
+              )}
+              {site.location && (
+                <li className="flex items-center gap-2">
+                  <MapPin className="h-4 w-4" /> {site.location}
+                </li>
+              )}
+              {site.settings.hours && (
+                <li className="flex items-center gap-2">
+                  <Clock className="h-4 w-4" /> {site.settings.hours}
+                </li>
+              )}
             </ul>
           </div>
 
@@ -109,7 +132,16 @@ const Footer = () => {
         </div>
 
         <div className="border-t border-white/10 py-6 text-center text-sm text-white/45">
-          <p>&copy; {new Date().getFullYear()} Source of Adventure. All rights reserved.</p>
+          {socials.length > 0 && (
+            <p className="mb-3 flex flex-wrap justify-center gap-4">
+              {socials.map(([key, url]) => (
+                <a key={key} href={url} target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-white">
+                  {SOCIAL_LABELS[key] ?? key}
+                </a>
+              ))}
+            </p>
+          )}
+          <p>&copy; {new Date().getFullYear()} {site.name}. All rights reserved.</p>
         </div>
       </div>
     </footer>

@@ -4,21 +4,21 @@ import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { ArrowUpRight, Mail, Menu, MessageCircle, Phone, X } from 'lucide-react'
-import { EMAIL, PHONE_DISPLAY, PHONE_TEL, whatsappLink } from '@/lib/contact'
+import { ArrowUpRight, Menu, X } from 'lucide-react'
+import { useSite } from '@/components/site/SiteProvider'
+
 
 const links = [
-  { name: 'Home', path: '/' },
+  // The logo links home; About, Calendar and Gallery are in the footer.
   { name: 'Adventures', path: '/adventures' },
-  { name: 'Calendar', path: '/calendar' },
+  { name: 'Events', path: '/events' },
   { name: 'Activities', path: '/activities' },
-  { name: 'Aerobics', path: '/aerobics' },
-  { name: 'Gallery', path: '/gallery' },
-  { name: 'About', path: '/about' },
+  { name: 'Corporate', path: '/corporate' },
   { name: 'Contact', path: '/contact' },
 ]
 
 export default function Navigation() {
+  const site = useSite()
   const pathname = usePathname()
   const [open, setOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
@@ -50,10 +50,10 @@ export default function Navigation() {
             : 'border-transparent bg-white/60 backdrop-blur-md'
         }`}
       >
-        <Link href="/" className="flex shrink-0 items-center gap-2.5" aria-label="Source of Adventure home">
+        <Link href="/" className="flex shrink-0 items-center gap-2.5" aria-label={`${site.name} home`}>
           <Image src="/SOA Logo-03.png" alt="" width={44} height={44} priority className="h-10 w-10 shrink-0" />
           <span className="leading-tight">
-            <span className="block text-[15px] font-extrabold tracking-tight text-stone-900">Source of Adventure</span>
+            <span className="block text-[15px] font-extrabold tracking-tight text-stone-900">{site.name}</span>
             <span className="block text-[11px] font-medium text-stone-500">Fun &amp; Fitness</span>
           </span>
         </Link>
@@ -115,18 +115,6 @@ export default function Navigation() {
           <Link href="/adventures" className="inline-flex items-center justify-center gap-2 rounded-2xl bg-accent-500 py-3.5 font-bold text-white">
             Book an adventure
           </Link>
-          <a
-            href={whatsappLink('Hi Source of Adventure! I have a question.')}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[#25D366] py-3.5 font-bold text-white"
-          >
-            <MessageCircle className="h-5 w-5" /> Chat on WhatsApp
-          </a>
-        </div>
-        <div className="mt-6 space-y-2 text-sm text-stone-500">
-          <a href={`tel:${PHONE_TEL}`} className="flex items-center gap-2"><Phone className="h-4 w-4" /> {PHONE_DISPLAY}</a>
-          <a href={`mailto:${EMAIL}`} className="flex items-center gap-2"><Mail className="h-4 w-4" /> {EMAIL}</a>
         </div>
       </div>
     </header>
