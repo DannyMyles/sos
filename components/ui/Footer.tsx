@@ -141,7 +141,10 @@ const Footer = async () => {
               ))}
             </p>
           )}
-          <p>&copy; {new Date().getFullYear()} {site.name}. All rights reserved.</p>
+          <p>
+            &copy; {new Date().getFullYear()} {site.name}. All rights reserved. ·{' '}
+            <Link href="/site-map" className="hover:text-white">Sitemap</Link>
+          </p>
         </div>
       </div>
     </footer>
