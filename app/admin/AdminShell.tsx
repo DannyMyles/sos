@@ -5,7 +5,6 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import {
-  ArrowLeftRight,
   CalendarCheck,
   ExternalLink,
   FileText,
@@ -33,10 +32,6 @@ const NAV = [
   { href: '/admin/emails', label: 'Email log', icon: Mail },
   { href: '/admin/settings', label: 'Settings', icon: Settings },
 ]
-
-// The other app sharing this backend, for admins who manage both.
-const PARTNER_ADMIN_URL = process.env.NEXT_PUBLIC_PARTNER_ADMIN_URL
-const PARTNER_NAME = process.env.NEXT_PUBLIC_PARTNER_NAME || 'other site'
 
 export default function AdminShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
@@ -93,11 +88,6 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
         ))}
       </nav>
       <div className="space-y-0.5 border-t border-white/10 px-3 py-4 text-sm">
-        {PARTNER_ADMIN_URL && (
-          <a href={PARTNER_ADMIN_URL} className="flex items-center gap-3 rounded-xl px-3 py-2 text-white/70 hover:bg-white/10 hover:text-white">
-            <ArrowLeftRight className="h-4 w-4" /> Switch to {PARTNER_NAME}
-          </a>
-        )}
         <Link href="/" target="_blank" className="flex items-center gap-3 rounded-xl px-3 py-2 text-white/70 hover:bg-white/10 hover:text-white">
           <ExternalLink className="h-4 w-4" /> View website
         </Link>
