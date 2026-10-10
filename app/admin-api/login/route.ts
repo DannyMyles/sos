@@ -24,7 +24,9 @@ export async function POST(req: NextRequest) {
   out.cookies.set(ADMIN_COOKIE, token, {
     httpOnly: true,
     sameSite: 'lax',
-    secure: process.env.NODE_ENV === 'production',
+    // Secure whenever the visitor is on HTTPS (directly or via the reverse proxy),
+    // so the login also works on a plain-HTTP address before a certificate exists.
+    secure: (req.headers.get('x-forwarded-proto') ?? req.nextUrl.protocol.replace(':', '')) === 'https',
     path: '/',
     maxAge: secondsUntilExpiry(token),
   })
