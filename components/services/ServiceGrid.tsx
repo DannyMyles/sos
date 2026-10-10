@@ -35,10 +35,10 @@ export default function ServiceGrid({ services, emptyText }: { services: Service
           ].filter(Boolean) as { icon: typeof Clock; text: string }[]
           return (
             <article key={s.id} className="group flex flex-col overflow-hidden rounded-3xl border border-stone-100 bg-white shadow-sm transition-shadow hover:shadow-xl">
-              <div className="relative h-52 overflow-hidden bg-stone-200">
+              <div className="relative aspect-[4/3] overflow-hidden bg-stone-200">
                 {s.image && (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img src={s.image} alt={s.title} loading="lazy" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                  <img src={s.image} alt={s.title} loading="lazy" className="h-full w-full object-cover object-[50%_25%] transition-transform duration-500 group-hover:scale-105" />
                 )}
                 {s.category && (
                   <span className="absolute left-4 top-4 rounded-full bg-white/90 px-3 py-1 text-xs font-bold text-stone-800 backdrop-blur">{s.category}</span>

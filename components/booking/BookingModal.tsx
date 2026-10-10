@@ -114,7 +114,7 @@ export default function BookingModal({ adventure, onClose, onBooked }: BookingMo
         <div className="relative h-32 sm:h-36 overflow-hidden rounded-t-3xl">
           {adventure.image && (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={adventure.image} alt="" className="h-full w-full object-cover" />
+            <img src={adventure.image} alt="" className="h-full w-full object-cover object-[50%_25%]" />
           )}
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-black/10" />
           <button

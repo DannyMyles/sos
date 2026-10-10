@@ -17,14 +17,14 @@ export default function AdventureCard({ adventure, onBook }: { adventure: Advent
 
   return (
     <article className="reveal group flex flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
-      <div className="relative h-52 overflow-hidden">
+      <div className="relative aspect-[4/3] overflow-hidden">
         {adventure.image ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={adventure.image}
             alt={adventure.title}
             loading="lazy"
-            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+            className="h-full w-full object-cover object-[50%_25%] transition-transform duration-500 group-hover:scale-105"
           />
         ) : (
           <div className="h-full w-full bg-gradient-adventure" />
